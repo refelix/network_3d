@@ -32,8 +32,13 @@ plot_graph(G,node_color_keyword='z',edge_color_keyword='z',scale_node_keyword='d
 #show the binary data
 mlab.contour3d(bin.astype(np.float),contours=[.5],opacity=.5,color=(1,1,1))
 ```
-have a look at the `plot_graph' docstring for more options. In this example the 'z'-component was used to colorcode the edges and nodes, the size of the nodes is scaled depending on the degree of the nodes. The edge radius can further be varied dependent on a quantity that is stored in the attribute dictionary of the edges.
+This is the result of the visualization:
+![Image of 3d graph](https://github.com/refelix/network_3d/blob/master/graph.png?raw=true "result of the example")
+
+ In this example the 'z'-component was used to colorcode the edges and nodes, the size of the nodes is scaled depending on the degree of the nodes.
+Have a look at the `plot_graph' docstring for more options: The edge radius can further be varied dependent on a quantity that is stored in the attribute dictionary of the edges.
 If you develop your own functions to quantify the edges and you want to visualize this quantity, make sure it is either a float or a list of floats with the same length as the coordinates.
 
-
+### Interested in more 3D network analysis? 
+Currently I am waiting for two scientific publications on the analysis of cellnetworks in bone to be accepted. As soon as this is the case I will make my currently private repository public. In the mean time you can have a look at [my thesis](edoc.hu-berlin.de/docviews/abstract.php?lang=ger&id=42041). If you use this code for scientific work, I would be delighted if you check if my publications are already accepted and acknowledge them in your own work.
 
