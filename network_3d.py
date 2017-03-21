@@ -498,22 +498,11 @@ https://mail.enthought.com/pipermail/enthought-dev/2011-November/030194.html
             else:
                 node_color_scalar = len(xn) * [1]
 
-            node_src = mlab.pipeline.scalar_scatter(np.array(xn).ravel(), np.array(
-                yn).ravel(), np.array(zn).ravel(), np.array(node_color_scalar).ravel())
-
-            node_src.mlab_source.dataset.point_data.vectors = np.abs(
-                np.array([s, s, s]).T)
-
-            node_src.mlab_source.dataset.point_data.add_array(
-                np.abs(np.array(s).ravel()))
-            node_src.mlab_source.dataset.point_data.get_array(
-                1).name = 'radius'
-            
-            pts = mlab.pipeline.glyph(mlab. pipeline.set_active_attribute(
-                node_src, point_scalars='scalars', point_vectors='radius'), scale_factor=node_size * 5, resolution=16)
+            pts = mlab.quiver3d(np.array(xn).ravel(), np.array(
+                yn).ravel(), np.array(zn).ravel(),s,s,s, scalars=np.array(node_color_scalar).ravel(), mode='sphere',scale_factor=node_size,resolution=16)
             
             pts.glyph.color_mode = 'color_by_scalar'
-            pts.glyph.scale_mode = 'scale_by_vector'
+            #pts.glyph.scale_mode = 'scale_by_vector'
     print 'done'
     fig.scene.disable_render = disable_render
     return tube_surf, pts
