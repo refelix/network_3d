@@ -17,11 +17,11 @@ bin[:,:,1:11]=np.array(image)[:,:,np.newaxis]
 image = Image.new("L", (150,150))
 draw = ImageDraw.Draw(image)
 draw.text((30,30), 'B', (1), font=font)
-bin[:,:,7:17]+=np.array(image)[:,:,np.newaxis]
+bin[:,:,7:17]= np.logical_or(bin[:,:,7:17],np.array(image)[:,:,np.newaxis])
 image = Image.new("L", (150,150))
 draw = ImageDraw.Draw(image)
 draw.text((60,60), 'X', (1), font=font)
-bin[:,:,14:24]+=np.array(image)[:,:,np.newaxis]
+bin[:,:,14:24]=np.logical_or(bin[:,:,14:24],np.array(image)[:,:,np.newaxis])
 
 
 
