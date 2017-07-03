@@ -1,9 +1,12 @@
 # network_3d: python tools to convert a 3d skeleton to a graph and visualize the result
 
 After finding out that Scikit-image has now a fast [skeletonization algorithm](http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.skeletonize_3d) I like to share some code to convert such a skeleton to a [networkx](https://networkx.github.io/) graph and a function to visualize the graph in space using mayavi. While the former is strongly influenced by a [matlab code by Philip Kollmannsberger](https://github.com/phi-max/skel2graph3d-matlab) the later is based on a script by [Gael Varoquaux](https://mail.enthought.com/pipermail/enthought-dev/2011-November/030194.html).
-Networkx allows does not only allow to quantify the network topology, but also a handy datastructure if you want to write your own analysis tools
+Networkx allows does not only allow to quantify the network topology, but also a handy data structure if you want to write your own analysis tools
+In addition  you should check out [TINA](https://bitbucket.org/refelix/tina) which was designed to anylze confocal images of osteocyte networks and includes many functions to analyse the network, image filtering,... 
+If you use network_3d for a scientific publication it would be kind of you id if you cite 
+Repp, Felix et al. “Spatial Heterogeneity in the Canalicular Density of the Osteocyte Network in Human Osteons.” Bone Reports 6 (2017): 101–108. PMC. Web. 3 July 2017.
 
-## Instalation
+## Installation
 I recommend using Anaconda Python and installing current version of 
 + scikit-image
 + networkx
@@ -26,7 +29,7 @@ skel = skeletonize_3d(bin) #scikit-image function
 skel = skel.astype(np.bool) #data needs to be bool
 G = skel2graph(skel) #create graph
 
-#plot the graph, use the z component to colorcode both the edges and the nodes, scale nodes according to their degree
+#plot the graph, use the z component to color code both the edges and the nodes, scale nodes according to their degree
 plot_graph(G,node_color_keyword='z',edge_color_keyword='z',scale_node_keyword='degree')
 
 #show the binary data
@@ -40,5 +43,5 @@ Have a look at the `plot_graph' docstring for more options: The edge radius can 
 If you develop your own functions to quantify the edges and you want to visualize this quantity, make sure it is either a float or a list of floats with the same length as the coordinates.
 
 ### Interested in more 3D network analysis? 
-Currently I am waiting for two scientific publications on the analysis of cellnetworks in bone to be accepted. As soon as this is the case I will make my currently private repository public. In the mean time you can have a look at [my thesis](edoc.hu-berlin.de/docviews/abstract.php?lang=ger&id=42041). If you use this code for scientific work, I would be delighted if you check if my publications are already accepted and acknowledge them in your own work.
+Currently I am waiting for two scientific publications on the analysis of cell networks in bone to be accepted. As soon as this is the case I will make my currently private repository public. In the mean time you can have a look at [my thesis](edoc.hu-berlin.de/docviews/abstract.php?lang=ger&id=42041). If you use this code for scientific work, I would be delighted if you check if my publications are already accepted and acknowledge them in your own work.
 
