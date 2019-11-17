@@ -1,7 +1,7 @@
 
 import networkx as nx
 import collections
-import itertools as IT
+#import itertools as IT
 from scipy.ndimage import label
 from mayavi import mlab
 import numpy as np
@@ -23,7 +23,7 @@ def get_nhood(img):
     nhi : the indices of all 27 neighbors, incase they are true
     inds : of all True voxels (raveled)
     """
-    print 'calculating neighborhood'
+    print('calculating neighborhood')
     #check if padded
     assert img.dtype==np.bool
     assert img[0,:,:].max()==0
@@ -57,7 +57,7 @@ def get_nhood(img):
     # calculate number of neighbors (+1)
     nhood = np.sum(nhi > 0, axis=-1, dtype=np.uint8)
     
-    print 'done'
+    print('done')
     return nhood, nhi, inds
 
 
@@ -124,8 +124,7 @@ nodevoxels (neighborhood >3) which are not seperated by edge voxels (neighborhoo
         indnode = indnode.astype(np.uint16)
     try: #this might produce memory error
         inspacingavel = indnode.ravel()
-
-        for idx, val in IT.izip(np.arange(nodes.size, dtype=np.uint64), inspacingavel):
+        for idx, val in zip(np.arange(nodes.size, dtype=np.uint64), inspacingavel) :
             stop
             if not val == 0:
                 node_inds_all[val].append(idx)
@@ -138,7 +137,7 @@ nodevoxels (neighborhood >3) which are not seperated by edge voxels (neighborhoo
         steps = np.linspace(
             0, inspacingavel.size, inspacingavel.size / 10000, dtype=np.uint64)
         for i in range(len(steps) - 1):
-            for idx, val in IT.izip(np.arange(steps[i], steps[i + 1], dtype=np.uint64), inspacingavel[steps[i]:steps[i + 1]]):
+            for idx, val in zip(np.arange(steps[i], steps[i + 1], dtype=np.uint64), inspacingavel[steps[i]:steps[i + 1]]):
                 if not val == 0:
                     node_inds_all[val].append(idx)
     N=len(node_inds_all.keys())
@@ -159,10 +158,10 @@ nodevoxels (neighborhood >3) which are not seperated by edge voxels (neighborhoo
             mn = True
         else:
             mn = False
-        G.add_node(i, {'x': xmean * spacing[0] + origin[0], 'y': ymean * spacing[1] + origin[1], 'z': zmean * spacing[
+        G.add_node(i, **{'x': xmean * spacing[0] + origin[0], 'y': ymean * spacing[1] + origin[1], 'z': zmean * spacing[
                    2] + origin[2], 'multinode': mn,  'idx': node_inds})
         # find all canal vox in nb of all node idx
-    print 'nodes done, track edges'
+    print('nodes done, track edges')
     # del node_inds_all
     nodex = nx.get_node_attributes(G, 'x')
     nodey = nx.get_node_attributes(G, 'y')
@@ -172,7 +171,7 @@ nodevoxels (neighborhood >3) which are not seperated by edge voxels (neighborhoo
     # now, find all edges
 
     e_ravel = e_nb.ravel()  # might make it faster
-    
+    node_list = G.nodes()
     N=len(G.nodes())
     alledges=[]
     for i, nd in G.nodes(data=True):
@@ -183,14 +182,17 @@ nodevoxels (neighborhood >3) which are not seperated by edge voxels (neighborhoo
         node_inds = nd['idx']
         if nhood[inds==node_inds[0]]==1:
             continue
+
         # find all edge voxels which are neighbors of node i
         nbs = np.in1d(e_ravel, node_inds).reshape(e_nb.shape)
         e_n, pos = np.where(nbs)
+        
         # iterate through edge untill node is reached
         for m, idx in enumerate(e_n):
+            #pdb.set_trace()
             edge_inds = [e_inds[idx]]
-            test = e_nb[idx, pos[m] == 0]
-            # pdb.set_trace()
+            test = e_nb[idx, int(pos[m] == 0)]
+            #pdb.set_trace()
             while test in e_inds:
                 edge_inds.append(test)
                 newcan = e_nb[e_inds == test]
@@ -204,7 +206,7 @@ nodevoxels (neighborhood >3) which are not seperated by edge voxels (neighborhoo
                 
                 # to avoid starting the edge from the oposite side
                 e_nb[e_inds == edge_inds[-1]] *= 0
-                assert  n2  in G.nodes()
+                assert  n2 in node_list
                 
                 x, y, z = np.lib.unravel_index(
                     np.array(edge_inds).astype(np.int64), img.shape)
@@ -213,12 +215,14 @@ nodevoxels (neighborhood >3) which are not seperated by edge voxels (neighborhoo
                 z_ = np.r_[nodez[i], z * spacing[2] + origin[2], nodez[n2]]
                 alledges.append((i, n2, {'x': x_, 'y': y_, 'z': z_, 'weight': get_length(
                     x_, y_, z_), 'n1': i, 'n2': n2}))
-              
+    
+            
     G.add_edges_from(alledges)
-    print 'edges done'
+    print('edges done')
     
 
     return G
+
 
 
 
@@ -335,7 +339,7 @@ https://mail.enthought.com/pipermail/enthought-dev/2011-November/030194.html
         pts : tvtk actor
             actor of the nodes
     """ 
-    print 'plot graph'
+    print('plot graph')
     from tvtk.api import tvtk
     cell_array = tvtk.CellArray()
    
@@ -376,7 +380,7 @@ https://mail.enthought.com/pipermail/enthought-dev/2011-November/030194.html
         zstop.extend(edgedict['z'])
         #how many segments in line?
         l = len(edgedict['x'])
-        line = range(i, i + l)
+        line = list(range(i, i + l))
         line.insert(0, l)
         lines.extend(line)
         i += l
@@ -448,7 +452,7 @@ https://mail.enthought.com/pipermail/enthought-dev/2011-November/030194.html
         tubes.filter.vary_radius = 'vary_radius_by_scalar'
     else:
         tubes = edges_src
-    tube_surf = mlab.pipeline.surface(mlab.pipeline. set_active_attribute(
+    tube_surf = mlab.pipeline.surface(mlab.pipeline.set_active_attribute(
         tubes, point_scalars='scalars'), colormap=edge_colormap, color=edge_color, **kwargs)
     tubes.children[0].point_scalars_name='scalars'
     if edge_color_keyword is None:
@@ -488,13 +492,13 @@ https://mail.enthought.com/pipermail/enthought-dev/2011-November/030194.html
                     for n in nodes:
                             s.append(dic[n])
                else:
-                    s= nx.get_node_attributes(G,scale_node_keyword).values() 
+                    s= list(nx.get_node_attributes(G,scale_node_keyword).values() )
             else:
                 s = np.ones(len(xn)) * node_size   
                       
             if node_color_keyword is not None:
-                node_color_scalar = nx.get_node_attributes(
-                    G, node_color_keyword ).values()
+                node_color_scalar = list(nx.get_node_attributes(
+                    G, node_color_keyword ).values())
             else:
                 node_color_scalar = len(xn) * [1]
 
@@ -503,7 +507,7 @@ https://mail.enthought.com/pipermail/enthought-dev/2011-November/030194.html
             pts.glyph.glyph_source.glyph_position = 'center'
             pts.glyph.color_mode = 'color_by_scalar'
             #pts.glyph.scale_mode = 'scale_by_vector'
-    print 'done'
+    print('done')
     fig.scene.disable_render = disable_render
     return tube_surf, pts
 
